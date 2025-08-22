@@ -10,23 +10,15 @@ import { useRouter } from "next/navigation";
 import { useLogin } from "@/hooks/loginHook/useLogin";
 
 interface FormErrors {
-  name?: string;
   email?: string;
-  phone?: string;
-  experience?: string;
-  api?: string;
+  password?: string;
+  message?: string;
 }
 
 export default function LoginForm() {
-  const [file, setFile] = useState<File | null>(null);
-  const [fileReset, setFileReset] = useState<boolean>(false);
+  const [error,setError]=useState<FormErrors>();
   const adminLogin=useLogin();
   const router=useRouter();
-  useEffect(()=>{
-    // if(reDirectToDashBoard){
-    //   router.push('/user/dashboard/stream-selection')
-    // }
-  })
   const validationSchema = Yup.object({
     email: Yup.string()
       .matches(/^[^\s@]+@[^\s@]+\.[^\s@]+$/, "Invalid email format")
@@ -51,10 +43,28 @@ export default function LoginForm() {
       formPayload.append("email", values.email);
       formPayload.append("password", values.password);
       adminLogin.mutate(formPayload, {
-        onSuccess: () => {
+        onSuccess: (data) => {
           formik.resetForm();
-          router.push('/dashboard')
+            if(data.success){
+              router.push('/dashboard')
+            }else{
+              setError((prev)=>{
+              const updated={  ...prev,
+                message:data.details.message
+              }
+              return updated;
+              })
+            }
         },
+        onError:(error)=>{
+          setError((prev)=>{
+            const updated={
+              ...prev,
+              message:error.message
+            }
+            return updated;
+          })
+        }
       });
     },
   });
@@ -63,11 +73,11 @@ export default function LoginForm() {
     <form onSubmit={formik.handleSubmit}>
       <div className="flex-1 rounded-lg shadow-2xl shadow-black/30 bg-gray-50 pb-6 pt-8">
         <div className="w-full">
-          {/* {errorsList.message && (
+          {error?.message && (
             <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded-md  relative mb-10 mx-auto w-11/12" role="alert">
-              <span className="block sm:inline">{errorsList.message}</span>
+              <span className="block sm:inline">{error.message}</span>
             </div>
-          )} */}
+          )}
           <div className=" flex flex-col sm:flex-row sm:items-center sm:justify-between gap-5 px-5">
             <div className="relative flex-1">
               <InputField

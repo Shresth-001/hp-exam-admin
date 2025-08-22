@@ -3,29 +3,23 @@ import InputField from "@/components/inputFields/inputField";
 import SubmitButton from "@/components/button/submitButton";
 import { FaArrowAltCircleRight } from "react-icons/fa";
 import { useEffect, useState } from "react";
-// import { useLogin } from "@/hooks/loginHooks/useLogin";
 import { useFormik } from "formik";
 import * as Yup from "yup";
 import { useRouter } from "next/navigation";
 import { useRegister } from "@/hooks/registerHook/useRegister";
 
 interface FormErrors {
-  name?: string;
+  name?:string;
   email?: string;
-  phone?: string;
-  experience?: string;
-  api?: string;
+  phone?:number;
+  password?: string;
+  message?: string;
 }
 
 export default function RegisterForm() {
-//   const { errorsList, userLogin, setErrorList,reDirectToDashBoard } = useLogin();
+const [error,setError]=useState<FormErrors>();
 const adminRegister=useRegister();
   const router=useRouter();
-  useEffect(()=>{
-    // if(reDirectToDashBoard){
-    //   router.push('/user/dashboard/stream-selection')
-    // }
-  })
   const validationSchema = Yup.object({
     name: Yup.string()
       .matches(/^[A-Za-z\s'-]+$/, "Name contains invalid characters.")
@@ -60,10 +54,28 @@ const adminRegister=useRegister();
       formPayload.append("phone", values.phone);
       formPayload.append("password", values.password);
       adminRegister.mutate(formPayload, {
-        onSuccess: () => {
+        onSuccess: (data) => {
           formik.resetForm();
-          router.push('/admin/login')
+          if(data.success){
+            router.push('/admin/login')
+          }else{
+            setError((prev)=>{
+              const updated={  ...prev,
+                message:data.details.message
+              }
+              return updated;
+              })
+          }
         },
+        onError:(error)=>{
+          setError((prev)=>{
+            const updated={
+              ...prev,
+              message:error.message
+            }
+            return updated;
+          })
+        }
       });
     },
   });
@@ -72,11 +84,11 @@ const adminRegister=useRegister();
     <form onSubmit={formik.handleSubmit}>
       <div className="flex-1 rounded-lg shadow-2xl shadow-black/30 bg-gray-50 pb-6 pt-8">
         <div className="w-full">
-          {/* {errorsList.message && (
+          {error?.message && (
             <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded-md  relative mb-10 mx-auto w-11/12" role="alert">
-              <span className="block sm:inline">{errorsList.message}</span>
+              <span className="block sm:inline">{error.message}</span>
             </div>
-          )} */}
+          )}
           <div className=" flex flex-col sm:flex-row sm:items-center sm:justify-between gap-5 px-5">
             <div className="relative flex-1 ">
               <InputField
