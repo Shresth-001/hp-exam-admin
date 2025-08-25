@@ -9,7 +9,10 @@ export default function Layout({children}:{children: React.ReactNode}){
                 <SideNav/>
             </div>
             {/* md:overflow-y-auto */}
-            <div className="flex-grow p-6  md:p-12">{children}</div>
+            <div className="flex-grow p-6  md:p-12">
+                <h1 className="text-3xl text-black font-serif mb-2">Dashboard</h1>
+                {children}
+                </div>
         </div>
     )
 }

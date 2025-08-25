@@ -9,6 +9,7 @@ export const useLogin=()=>{
         },
         onSuccess:(data)=>{
             // console.log(data);
+            localStorage.clear();
             if(data.success){
                 const token=data.data.token;
                 localStorage.setItem('token',token);

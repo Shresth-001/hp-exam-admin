@@ -30,7 +30,7 @@ export const apiRequest = async <T = any>(
       data,
       ...config,
     });
-
+    // console.log(res);
     return {
       success: true,
       status: res.status,
