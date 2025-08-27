@@ -122,7 +122,7 @@ export default function LoginForm() {
               type="submit"
               isPending={adminLogin.isPending}
               text={"Log In"}
-              className="group w-85 rounded-3xl px-10 py-2 font-semibold flex items-center justify-center bg-gradient-to-r from-[#ff3c57] to-[#ff7861] text-white whitespace-nowrap
+              className="group w-85 rounded-3xl px-10 py-2 font-semibold flex items-center cursor-pointer justify-center bg-gradient-to-r from-[#ff3c57] to-[#ff7861] text-white whitespace-nowrap
                          hover:from-[#ff5e7b] hover:to-[#ff9b7c] hover:shadow-lg hover:shadow-pink-400/50 transition-all duration-300"
               children={
                 <FaArrowAltCircleRight className="h-6 w-6 text-gray-50 ml-2 transform group-hover:translate-x-1 transition-transform duration-300" />

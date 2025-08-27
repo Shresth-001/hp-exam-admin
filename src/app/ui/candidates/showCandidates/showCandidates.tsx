@@ -1,7 +1,8 @@
 "use client";
 import ReactSpinner from "@/components/loader/reactSpinner";
-import { useCandidate } from "@/hooks/candidateHooks/useCandidate";
+import { useCandidate } from "@/hooks/candidateHooks/useCandidates";
 import Card from "../candidateCard/card";
+import CandidateTable from "../candidateTable/candidateTable";
 
 interface candidateType {
   email: string;
@@ -34,9 +35,10 @@ export default function ShowCandidates() {
     <div className="flex flex-row flex-wrap gap-10 mt-20 mb-5 justify-center  ">
       {candidates?.success && (
         <>
-          {candidates.data.map((candidate: candidateType) => (
+          {/* {candidates.data.map((candidate: candidateType) => (
                 <Card key={candidate.user_id} candidate={candidate}/>
-          ))}
+          ))} */}
+          <CandidateTable candidates={candidates.data}/>
         </>
       )}
     </div>

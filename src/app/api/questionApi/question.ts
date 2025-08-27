@@ -13,34 +13,43 @@ interface QuestionType {
   question_text?: string;
   question_type?: string;
   options?: string[];
-  answer?:string;
+  answer?: string;
 }
 interface UpdateQuestionType {
-  id:number;
+  id: number;
   question_text?: string;
   question_type?: string;
   options?: string[];
-  answer:string;
+  answer: string;
 }
-interface addProps{
-    question:QuestionType|null;
-    token?:string;
+interface addProps {
+  question: QuestionType | null;
+  token?: string;
 }
-interface updateProps{
-    question:UpdateQuestionType;
-    token?:string;
+interface updateProps {
+  question: UpdateQuestionType;
+  token?: string;
+}
+interface updateSelectQuestionProps {
+  is_selected: boolean;
+  id: number;
+  token:string;
 }
 export const getQuestion = async ({ stream, set, token }: props) => {
   if (!stream || !set) {
     return [];
   }
   try {
-const res=await apiRequest('get',`/questions/fetch?jobRole=${stream}&paperSet=${set}`,{
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: `Bearer ${token}`,
-    },
-})
+    const res = await apiRequest(
+      "get",
+      `/questions/fetch?jobRole=${stream}&paperSet=${set}`,
+      {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
     console.log(res);
     if (res.success) {
       return res.data.data.questions;
@@ -49,53 +58,84 @@ const res=await apiRequest('get',`/questions/fetch?jobRole=${stream}&paperSet=${
     throw error;
   }
 };
-export const deleteQuestion=async(id:number,token:string)=>{
-
-    try {
-        const res = await apiRequest("delete", `/questions/delete/${id}`, {
+export const deleteQuestion = async (id: number, token: string) => {
+  try {
+    const res = await apiRequest("delete", `/questions/delete/${id}`, {
       headers: {
         "Content-Type": "application/json",
         Authorization: `Bearer ${token}`,
       },
     });
-    } catch (error) {
-        throw error;
+  } catch (error) {
+    throw error;
+  }
+};
+export const addQuestion = async ({ question, token }: addProps) => {
+  try {
+    const res = await apiRequest("post", "/questions/create", question, {
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+    });
+    console.log(res);
+    if (res.success) {
+      return res.data;
     }
-}
-export const addQuestion=async({question,token}:addProps)=>{
-    try {
-        const res=await apiRequest('post','/questions/create',question,{
-            headers:{
-                'Content-Type':'application/json',
-                Authorization:`Bearer ${token}`
-            }
-        })
-        console.log(res);
-        if(res.success){
-          return res.data;
-        }
-        return res;
-    } catch (error) {
-        throw error;
+    return res;
+  } catch (error) {
+    throw error;
+  }
+};
+export const updateQuestion = async ({ question, token }: updateProps) => {
+  const { id } = question;
+  try {
+    const res = await apiRequest("put", `/questions/update/${id}`, question, {
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+    });
+    console.log(res);
+    if (res.success) {
+      return res.data;
     }
-}
-export const updateQuestion=async({question,token}:updateProps)=>{
-    const {id}=question;
-    try {
-        const res=await apiRequest('put',`/questions/update/${id}`,question,{
-            headers:{
-                'Content-Type':'application/json',
-                Authorization:`Bearer ${token}`
-            }
-        })
-        console.log(res);
-        if(res.success){
-            return res.data
-        }
-        return res;
-    } catch (error) {
-        throw error;
-    }
-}
+    return res;
+  } catch (error) {
+    throw error;
+  }
+};
 
-
+export const updateSelectedQuestion = async ({
+  id,
+  is_selected,
+  token,
+}: updateSelectQuestionProps) => {
+  const data={
+    id:id,
+    is_selected:is_selected,
+  }
+  try {
+    const res = await apiRequest("put", `/questions/toggle-selection/${id}`,data,{
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+    });
+    
+    if(res.success){
+        return res.data;
+    }else{
+        return {
+        success: res.success,
+        status: res.status,
+        details: res.details,
+      };
+    } 
+    }catch(error:any){
+        return {
+      success: false,
+      errors: { message: error.message || "Network or server error" },
+    };
+    }
+};

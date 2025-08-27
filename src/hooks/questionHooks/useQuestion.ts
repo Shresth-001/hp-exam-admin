@@ -1,4 +1,4 @@
-import { deleteQuestion, getQuestion,addQuestion, updateQuestion } from "@/app/api/questionApi/question";
+import { deleteQuestion, getQuestion,addQuestion, updateQuestion, updateSelectedQuestion } from "@/app/api/questionApi/question";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
 type OptionId='Frontend'|'Backend'|'Sales'|'Others'
 interface props{
@@ -20,6 +20,10 @@ interface UpdateQuestionType {
   options?: string[];
   answer:string;
 }
+interface updateSelectQuestionProps{
+    is_selected:boolean;
+    id:number;
+}
 export const useQuestion=({set,stream}:props)=>{
     const queryClient=useQueryClient();
     const token:any=localStorage.getItem('token')
@@ -28,7 +32,7 @@ export const useQuestion=({set,stream}:props)=>{
         queryKey:['question',stream,set],
         queryFn:()=>getQuestion({stream,set,token}),
         enabled: !!stream && !!set,
-        staleTime: 1000 * 60 * 5,
+        staleTime: 1000 * 60 * 2,
     })
     const deleteQuestionMutation=useMutation({
         mutationFn:async(id:number)=>{
@@ -56,6 +60,15 @@ export const useQuestion=({set,stream}:props)=>{
             queryClient.invalidateQueries({queryKey:['question',stream,set]});
         }
     })
+    const updateSelectQuestion=useMutation({
+        mutationFn:async({id,is_selected}:updateSelectQuestionProps)=>{
+            return await updateSelectedQuestion({is_selected,id,token})
+        },
+        onSuccess:(data)=>{
+
+            queryClient.invalidateQueries({queryKey:['question',data.data.jobRole,data.data.paperSet]})
+        }
+    })
     
-    return {questions,isLoading,isError,error,deleteQuestionMutation,addQuestionMutation,updateQuestionMutation};
+    return {updateSelectQuestion,questions,isLoading,isError,error,deleteQuestionMutation,addQuestionMutation,updateQuestionMutation};
 }

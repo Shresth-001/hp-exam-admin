@@ -25,9 +25,9 @@ export default function QuestionSet({handleSet}:props) {
                 isPending={false}
                 text={set}
                 className={twMerge(
-                  "px-6 py-1 border border-gray-300 rounded w-1/2 p-5",
+                  "px-6 py-1 border-b border-gray-300 cursor-pointer rounded w-1/2 p-5",
                   selected===set
-                  ?"border-[#ff3c57] bg-white/30 backdrop-blur-sm shadow-md transition-all transform-3d border-1 "
+                  ?"border-b-[#ff3c57] bg-white/30 backdrop-blur-sm shadow-md transition-all transform-3d border-b-1 "
                   :'border-gray-200 hover:border-blue-300 hover:bg-[#ff3c57] hover:text-white'
                 )}
                 onClick={() => {
